@@ -3,12 +3,10 @@ import express from 'express';
 const routes = express();
 
 //Controller Imports
+import userController from './controllers/userController';
 
+//User Routes
+routes.post('/signup', userController.postUser);
 
-routes.get('/', (req, res) => {
-	res.json({
-		message: 'routes are working'
-	});
-});
 
 export default routes;
