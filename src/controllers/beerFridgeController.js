@@ -3,6 +3,30 @@ import db from './../models/index';
 const beerFridgeController = {};
 
 
+//Create Fridge
+beerFridgeController.createFridge = (req, res) => {
+	const { owner } = req.body;
+
+	const fridge = new db.BeerFridge({
+		owner
+	});
+
+	fridge.save()
+		.then((newFridge) => {
+			res.status(200).json({
+				success: true,
+				data: newFridge
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				data: err
+			});
+		});
+};
+
+
+
 //Get User's Fridge
 beerFridgeController.getUserFridge = (req, res) => {
 	const { user } = req.params;
