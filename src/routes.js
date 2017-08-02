@@ -17,7 +17,7 @@ routes.get('/categories/:categoryId', beerController.getSingleCategory);
 
 //Beer Fridge Routes
 routes.get('/beerFridge', beerFridgeController.getUserFridge);
-routes.get('/beerFridge/update', beerFridgeController.updateFridge);
+routes.put('/beerFridge/update', beerFridgeController.updateFridge);
 
 
 export default routes;
