@@ -2,3 +2,4 @@ node_modules
 .eslintrc.json
 dist
 keys.js
+npm-debug.log
