@@ -9,16 +9,18 @@ import beerFridgeController from './controllers/beerFridgeController';
 
 //User Routes
 routes.post('/signup', userController.postUser);
+routes.get('/getuser/:userSearch', userController.getUser);
 
 //Beer Routes
+routes.post('/beer/addbeer', beerController.addBeer);
 routes.get('/beers/:name/:p', beerController.getBeers);
 routes.get('/categories', beerController.getCategories);
 routes.get('/categories/:categoryId', beerController.getSingleCategory);
 
 //Beer Fridge Routes
-routes.post('/beerFridge', beerFridgeController.createFridge);
-routes.get('/beerFridge', beerFridgeController.getUserFridge);
-routes.put('/beerFridge/update', beerFridgeController.updateFridge);
+routes.post('/beerfridge', beerFridgeController.createFridge);
+routes.get('/beerfridge/:user', beerFridgeController.getUserFridge);
+routes.put('/beerfridge/update', beerFridgeController.updateFridge);
 
 
 export default routes;
