@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Beer from './Beer';
-import User from './User'
+import User from './User';
 
 const { Schema } = mongoose;
 
