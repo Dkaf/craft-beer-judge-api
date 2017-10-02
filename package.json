@@ -6,11 +6,10 @@
   },
   "private": true,
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-2\"",
-    "build": "babel src -s -D -d dist --presets es2015,stage-2",
-    "buildw": "npm run clean -s && webpack --config webpack.config.js",
+    "build": "npm run clean -s && webpack --config webpack.config.js",
     "clean": "rm -r dist",
     "start": "node dist",
     "prestart": "npm run -s build",
