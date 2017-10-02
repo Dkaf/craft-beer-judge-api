@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import routes from './routes';
 import config from '/../config';
 
-mongoose.connect(config.DBHost), () => {
+mongoose.connect(config.DBHost, () => {
 	console.log('connected to mongodb...');
 });
 
