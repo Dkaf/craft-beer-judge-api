@@ -36,6 +36,8 @@ beerController.addBeer = (req, res) => {
 
 };
 
+
+//Search for beers by name
 beerController.getBeers = (req, res) => {
 	const { name, page } = req.params;
 	const brewUrl = 'http://api.brewerydb.com/v2/beers/?key=' + BreweryKey + '&name=' + name + '&p=' + page;
@@ -48,6 +50,7 @@ beerController.getBeers = (req, res) => {
 		});
 };
 
+//Find categories
 beerController.getCategories = (req, res) => {
 	const categoryUrl = 'http://api.brewerydb.com/v2/categories/?key=' + BreweryKey;
 	unirest.get(categoryUrl)
@@ -59,6 +62,7 @@ beerController.getCategories = (req, res) => {
 		});
 };
 
+//Find single category
 beerController.getSingleCategory = (req, res) => {
 	const { categoryId } = req.params;
 	const categoryUrl = 'http://api.brewerydb.com/v2/category/'+ categoryId + '/?key=' + BreweryKey;
@@ -70,5 +74,6 @@ beerController.getSingleCategory = (req, res) => {
 			});
 		});
 };
+
 
 export default beerController;
