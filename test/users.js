@@ -65,11 +65,4 @@ describe('userController', () => {
 			});
 		});
 	});
-
-	// describe('getBeers', () => {
-	// 	it('should populate a users beers', (done) => {
-
-	// 	})
-	// })
-
 });
