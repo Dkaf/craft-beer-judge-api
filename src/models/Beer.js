@@ -14,7 +14,7 @@ const beerSchema = new Schema({
 		description: String
 	},
 	rating: Number,
-	owners: Number
+	owner: String
 });
 
 const Beer = mongoose.model('Beer', beerSchema);
