@@ -37,20 +37,19 @@ userController.postUser = (req, res) => {
 
 //Find User
 userController.getUser = (req, res) => {
-	const { userSearch } = req.params;
-
-	db.User.find({username: userSearch })
+	db.User.findById(req.decoded.id)
 		.populate('fridge')				
 		.then((user) => {
 			res.status(200).json({
 				success: true,
-				data: {id: user[0]._id, username: user[0].username, fridge: user[0].fridge}
+				data: {id: user._id, username: user.username, fridge: user.fridge}
 			});
 		})
 		.catch((err) => {
 			res.status(500).json({
 				message: err
 			});
+			throw err;
 		});
 
 };
@@ -58,8 +57,8 @@ userController.getUser = (req, res) => {
 
 //Login
 userController.login = (req, res) => {
-	const { name, password } = req.body;
-	db.User.findOne({'username': name})
+	const { username, password } = req.body;
+	db.User.findOne({'username': username})
 		.then((user) => {
 			if(!user) {
 				res.status(500).json({success: false, message:'User not found'});
@@ -68,29 +67,30 @@ userController.login = (req, res) => {
 					res.status(500).json({success: false, message:'Login failed. Incorrect password'});
 				} else if(bcrypt.compareSync(password, user.password)) {
 					const payload = {
+						iss: 'https://shielded-brook-50392.herokuapp.com/',
 						username: user.username,
 						id: user._id
 					};
 
 					let token = jwt.sign(payload, app.get('secret'), {
-						expiresIn: '24h'
+						expiresIn: '1h'
 					});
 
 					res.status(200).json({success: true, token: token});
 					
 				}
 			}
-		}).catch((err) => {
+		})
+		.catch((err) => {
 			throw err;
 		});
 };
 
 //Add Beer to User
 userController.addBeer = (req, res) => {
-	const { userId } = req.params;
 	const { beers } = req.body;
 
-	db.User.findOneAndUpdate({_id: userId}, {fridge: beers}, {new: true})
+	db.User.findOneAndUpdate({_id: req.decoded.id}, {fridge: beers}, {new: true})
 		.populate('fridge')
 		.exec((err, user) => {
 			if(err) {
@@ -98,7 +98,7 @@ userController.addBeer = (req, res) => {
 			} else if(user.username != req.decoded.username) {
 				return res.status(403).json({success: false, message:'Incorrect permissions'});
 			}
-			return res.status(200).json({success: true, data: user});			
+			return res.status(200).json({success: true, data: user.fridge});			
 		});
 };
 
