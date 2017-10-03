@@ -4,11 +4,16 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import beerController from '../src/controllers/beerController';
 import Beer from '../src/models/Beer';
-
+import User from '../src/models/User';
+// import { getBeers } from '/.nock_responses';
+import fs from 'fs';
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import nock from 'nock';
 import server from '../src/index.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const should = chai.should();
 
@@ -61,7 +66,9 @@ describe('beerController', () => {
 				}
 			};
 
-			var token = jwt.sign({username:'Dkaf', id: 123456}, server.get('secret'), {expiresIn: '1m'});
+			let user = new User({username: 'Daniel', password: 'testPassword', fridge:[]});
+			user.save();
+			let token = jwt.sign({username: user.username, id: user._id}, server.get('secret'), {expiresIn: '10s'});
 
 			chai.request(server)
 				.post('/api/beer/addbeer')
@@ -69,7 +76,47 @@ describe('beerController', () => {
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.body.success.should.equal(true);
-					res.body.data.should.have.property('name');
+					res.body.data.should.have.property('beer');
+					res.body.data.beer.should.be.a('object');
+					res.body.data.should.have.property('username');
+					res.body.data.username.should.be.a('string');
+					res.body.data.should.have.property('fridge');
+					res.body.data.fridge.should.be.a('array');
+					res.body.data.fridge.length.should.equal(1);
+					done();
+				});
+		});
+	});
+
+	describe('/removeBeer', () => {
+		it('should remove beer for a user', (done) => {
+			
+			let user = new User({username: 'Daniel', password: 'testPassword', fridge: []});
+			user.save( (err, user) => {
+				if(err) {
+					throw err;
+				}
+			});
+			let beer = new Beer({name: 'pseudo sue', _owner: user._id});
+			beer.save()
+				.then((beer) => {
+					User.findByIdAndUpdate(user._id)
+						.then( (user) => {
+							user.fridge.push(beer._id);
+						}).catch((err) => {
+							throw err;
+						});
+				}).catch( (err) => {
+					throw err;
+				});
+			let token = jwt.sign({username: user.username, id: user._id }, server.get('secret'), {expiresIn: '10s'}); 				
+			chai.request(server)
+				.delete('/api/beer')
+				.send({beerId: beer._id, token})
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.have.property('message');
+					res.body.message.should.be.a('string');
 					done();
 				});
 		});
@@ -77,12 +124,24 @@ describe('beerController', () => {
 
 	describe('/getBeers', () => {
 		it('should get beers by name and page', (done) => {
+
+
+			let contents = fs.readFileSync(__dirname + '/nock_responses/getBeers.json');
+
+			let jsonContents = JSON.parse(contents);
+
+			nock('http://api.brewerydb.com/v2')
+				.get('/beers/?key=' + process.env.BREWDB_KEY + '&name=sue&p=1')
+				.reply(200, jsonContents);
+
+
+
 			chai.request(server)
 				.get('/api/beers/sue/1')
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.body.success.should.equal(true);
-					res.body.data.should.be.a('array');
+					res.body.should.be.a('object');
 					done();
 				});
 		});
@@ -90,11 +149,22 @@ describe('beerController', () => {
     
 	describe('/getCategories', () => {
 		it('should get beer categories', (done) => {
-			chai.request(server)
+
+			let contents = fs.readFileSync(__dirname + '/nock_responses/getCategories.json');
+
+			let jsonContents = JSON.parse(contents);
+			
+			nock('http://api.brewerydb.com/v2')
+				.get('/categories/?key=' + process.env.BREWDB_KEY)
+				.reply(200, jsonContents);
+
+
+			chai.request('http://localhost:8080')
 				.get('/api/categories')
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.body.success.should.equal(true);
+					res.body.should.have.property('data');
 					res.body.data.should.be.a('array');
 					done();
 				});
@@ -103,13 +173,25 @@ describe('beerController', () => {
 
 	describe('/getSingleCategory', () => {
 		it('should get a beer category by id', (done) => {
+
+			let contents = fs.readFileSync(__dirname + '/nock_responses/getSingleCategory.json');
+
+			let jsonContents = JSON.parse(contents);
+			
+
+			nock('http://api.brewerydb.com/v2')
+				.get('/category/5/?key=' + process.env.BREWDB_KEY)
+				.reply(200, jsonContents);
+			
+
+
 			chai.request(server)
-				.get('/api/categories/1')
+				.get('/api/categories/5')
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.body.success.should.equal(true);
 					res.body.data.should.be.a('object');
-					res.body.data.id.should.equal(1);
+					res.body.data.id.should.equal(5);
 					done();
 				});
 		});
