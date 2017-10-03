@@ -1,8 +1,9 @@
 import unirest from 'unirest';
 import db from './../models/index';
+import key from '../../keys';
 
 const beerController = {};
-const BreweryKey = process.env.BREWDB_KEY;
+const BreweryKey = process.env.BREWDB_KEY || key;
 
 
 //New Beer
