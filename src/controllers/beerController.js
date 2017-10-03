@@ -1,5 +1,7 @@
 import unirest from 'unirest';
 import db from './../models/index';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const beerController = {};
 const BreweryKey = process.env.BREWDB_KEY;
