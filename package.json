@@ -11,7 +11,7 @@
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-2\"",
     "build": "npm run clean -s && webpack --config webpack.config.js",
     "clean": "rm -r dist",
-    "start": "set NODE_ENV=dist && node dist/bundle.js",
+    "start": "set NODE_ENV=production && node dist/bundle.js",
     "test": "mocha --compilers js:babel-core/register"
   },
   "author": "",
