@@ -20,9 +20,6 @@ routes.get('/beers/:name/:p', beerController.getBeers);
 routes.get('/categories', beerController.getCategories);
 routes.get('/categories/:categoryId', beerController.getSingleCategory);
 
-//Auth Middleware Testing Route
-// routes.get('/auth/test', authController.verifyToken);
-
 //Beer Fridge Routes
 // routes.post('/beerfridge', beerFridgeController.createFridge);
 // routes.get('/beerfridge/:user', beerFridgeController.getUserFridge);
