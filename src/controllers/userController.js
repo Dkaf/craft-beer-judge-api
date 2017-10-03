@@ -52,26 +52,35 @@ userController.getLogin = (req, res) => {
 
 //Add Beer to User
 userController.addBeer = (req, res) => {
-	const { user, beers } = req.params;
-	db.User.findOneAndUpdate({username: user},{fridge: beers}, {new: true}, (err, updatedUser) => {
-		if(err) {
-			return res.status(500).json({data: err});
-		}
-		db.User.populate(updatedUser, {path: 'fridge', model: 'Beer'}, (err, user) => {
-			return res.status(200).json({success: true, data: user});
+	const { userId } = req.params;
+	const { beers } = req.body;
+	db.User.findOneAndUpdate({_id: userId}, {fridge: beers}, {new: true})
+		.populate('fridge')
+		.exec((err, user) => {
+			if(err) {
+				return res.status(500).json({success: false, data: err});				
+			}
+			return res.status(200).json({success: true, data: user});			
 		});
-	});
 };
 
 //Delete User
 userController.deleteUser = (req, res) => {
 	const { userRemoved } = req.params;
-	db.User.remove({username: userRemoved}, (err, result) => {
-		res.status(200).json({
-			success: true,
-			data: result
+	db.User.remove({username: userRemoved})
+		.then((user) => {
+			res.status(200).json({
+				success: true,
+				data: user
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				success: false,
+				data: err
+			});
 		});
-	});
+
 };
 
 export default userController;
