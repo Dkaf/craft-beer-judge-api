@@ -1,3 +1,3 @@
 {
-    "DBHost": "mongodb://localhost:127.0.0.1"
+    "DBHost": "mongodb://localhost:27017"
 }
