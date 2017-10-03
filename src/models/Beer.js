@@ -13,7 +13,8 @@ const beerSchema = new Schema({
 		name: String,
 		description: String
 	},
-	rating: Number
+	rating: Number,
+	_owner: {type: Schema.Types.ObjectId, ref: 'User'}
 });
 
 const Beer = mongoose.model('Beer', beerSchema);
