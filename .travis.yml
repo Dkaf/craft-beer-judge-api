@@ -1,6 +1,12 @@
 language: node_js
-node_js: "7"
+node_js: '7'
 install: npm install
 cache:
   directories:
-    - "node_modules"
+  - node_modules
+services: mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: WSHKf3Kf/kv8IaX+UYbVT3xHkvIwxDUcaXyyKN5rID0xHVV/OWMMrvPpjBrQc0VikBj3Tvc6eS6XWr56mMOnqcoceTSJ5lDDVVdcP/xio9G9zncZqRGd1H1OP/LiRgWc1PWwjDXhDRFjWMNawpV+5SBzLr4D39GKDVqi2bbLDQJJvTyhQHBXrRYdca4omlwBPY2WSvLl+tj/4//FPiqHLe0JxQHrAaLJpakrnIXxic6FBhlpssWpy2uNV4zoWqY8U2iwUAgIsO0Hh5d4drmYNGwwXsbnWcNxmA/EUL4yTEsdszJfzKlBvZVXhsW8uRebnU18Qbn33cFE2TGLEEQYT02v24F1vx5ZMJC5wPuET2QXHd4HO7E6PqgOAvTew4URgtBT8mbaH7J3WGEO7rUrUmlegSnas+KcnWgTb+WDt6z1Ew/fkoAk9fZeAuyA/m5mb4shCOlB46yxI/57Obh2ARlqyz0pF7fva+1OwK2ClikV9HwGIpJKmGQIN/q6FSoTeTUdUsOdCd20udUuoK1GKQJ4/mQA4d9E54FZgfemxYBKyF+HD7rakypez72rr5S0MYbmAniXnZdwKi1Xl9/gmNMtm4ebElySePq4RsuUl0CdCxXQnbYjwtPlqtlDdViTxHOKnU5UrDVoZWFU7v8pr6A6dS9v+uwhapun02yWR3I=
+    app: shielded-brook-50392
