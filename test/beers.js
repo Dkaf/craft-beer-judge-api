@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'development';
 
 import mongoose from 'mongoose';
 import beerController from '../src/controllers/beerController';
