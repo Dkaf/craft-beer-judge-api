@@ -216,7 +216,7 @@ var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_app2.default.listen(8080, function () {
+_app2.default.listen(process.env.PORT || 8080, function () {
 	console.log('server is working!');
 });
 
@@ -251,11 +251,19 @@ var _routes = __webpack_require__(11);
 
 var _routes2 = _interopRequireDefault(_routes);
 
+var _config = __webpack_require__(18);
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_mongoose2.default.connect('mongodb://localhost:27017/craft_beer_judge', function () {
-	console.log('connected to mongodb...');
+var DBHost = _config2.default.get('DBHost');
+
+_mongoose2.default.connect(DBHost, {
+	useMongoClient: true
 });
+var db = _mongoose2.default.connection;
+db.on('error', console.error.bind('connection error'));
 
 var app = (0, _express2.default)();
 
@@ -301,7 +309,7 @@ var _beerController = __webpack_require__(14);
 
 var _beerController2 = _interopRequireDefault(_beerController);
 
-var _beerFridgeController = __webpack_require__(16);
+var _beerFridgeController = __webpack_require__(17);
 
 var _beerFridgeController2 = _interopRequireDefault(_beerFridgeController);
 
@@ -484,10 +492,14 @@ var _index = __webpack_require__(1);
 
 var _index2 = _interopRequireDefault(_index);
 
+var _keys = __webpack_require__(16);
+
+var _keys2 = _interopRequireDefault(_keys);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var beerController = {};
-var BreweryKey = process.env.BREWDB_KEY;
+var BreweryKey = process.env.BREWDB_KEY || _keys2.default;
 
 //New Beer
 beerController.addBeer = function (req, res) {
@@ -569,6 +581,16 @@ module.exports = require("unirest");
 
 /***/ }),
 /* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+const BreweryDBKey = '29a959fd4d3a2351cecc2230eac810f9';
+
+/* harmony default export */ __webpack_exports__["default"] = (BreweryDBKey);
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -646,6 +668,12 @@ beerFridgeController.updateFridge = function (req, res) {
 };
 
 exports.default = beerFridgeController;
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("config");
 
 /***/ })
 /******/ ]);
