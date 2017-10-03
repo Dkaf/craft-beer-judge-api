@@ -6,10 +6,12 @@ cache:
   - node_modules
 services: mongodb
 before_script:
-  - sleep 15
-  - mongo mydb_test --eval 'db.addUser("travis", "test");'
-env: 
-  NODE_ENV: development
+- sleep 15
+- mongo mydb_test --eval 'db.addUser("travis", "test");'
+env:
+  global:
+    NODE_ENV: development
+    secure: bhBe1WnirDbwADYgcoT3sZrMu52EMtECaXxtdoBamLlv2LtfBzSN5QbMZdnVlDtKQlYBpIT9ImDus0rFZsRBV8Pn00fjomqKrUUckvgRBKr29rYjdGiPP/3Hwvin2W1EOEttOuzdRuGmr0uV+puSYjhvgjUyZsva8KmaWrRhdyWk6CT+J9DoCVYbAcnnXkfG9LLFlaNT/2iBktVEmmWJc/VfRBQ1A8W0BcY/bmpg/hpCmasZGaofAN7qaSNvpGq8zrXC1Or1f0nvROEH/CZoudu/KMAs+rZWTjrI840aQxJv95f7reCBhLg4A0WiPkYFvA1yCYmpYRObhUDFrVmzgWn2HeNei6TLTa6pUVDEJ5Y3Qb7jFBaB3hTuVlFTTMYD8RxK8buaQapIcaGE/xKQvwiV5R9QHrKec3aEIvxxpwEQMdqcQnv7dCDNbDIAGuDMjJTZxBi3/d3CNVJJBjse+trGqo//0qsocXCKMc3DmpzFaD/YShWgm2tlmb1ENvGu+Z2TDHmdj+m/x6x4xqd+BigJOLR7TreT27WtjZ3f6SM+PqwPsR5XG9ILDkN3nMKLkGE5zyAqtPvsVmEnYYomnhrWq1bq0oo9IxS+LUU2Q9bV7Zbjq4K3p162VBDO/HFJVGvAiEwgEuCzb8bMERNuqDyfSowQjN0KLTugQzPmvoc=
 deploy:
   provider: heroku
   api_key:
