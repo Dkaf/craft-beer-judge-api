@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -80,28 +80,68 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _User = __webpack_require__(4);
+var _express = __webpack_require__(4);
 
-var _User2 = _interopRequireDefault(_User);
+var _express2 = _interopRequireDefault(_express);
 
-var _BeerFridge = __webpack_require__(13);
+var _bodyParser = __webpack_require__(11);
 
-var _BeerFridge2 = _interopRequireDefault(_BeerFridge);
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _Beer = __webpack_require__(2);
+var _cors = __webpack_require__(12);
 
-var _Beer2 = _interopRequireDefault(_Beer);
+var _cors2 = _interopRequireDefault(_cors);
+
+var _mongoose = __webpack_require__(0);
+
+var _mongoose2 = _interopRequireDefault(_mongoose);
+
+var _jsonwebtoken = __webpack_require__(2);
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+
+var _routes = __webpack_require__(13);
+
+var _routes2 = _interopRequireDefault(_routes);
+
+var _config = __webpack_require__(20);
+
+var _config2 = _interopRequireDefault(_config);
+
+var _dotenv = __webpack_require__(7);
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = {
-	User: _User2.default,
-	BeerFridge: _BeerFridge2.default,
-	Beer: _Beer2.default
-};
+_dotenv2.default.config();
+
+var DBHost = _config2.default.get('DBHost');
+
+_mongoose2.default.connect(DBHost, {
+	useMongoClient: true
+}).then(console.log("Connected to mongodb..."));
+var db = _mongoose2.default.connection;
+db.on('error', console.error.bind('connection error'));
+
+var app = (0, _express2.default)();
+
+//Middleware
+app.use(_bodyParser2.default.json());
+app.set('secret', process.env.SECRET_KEY);
+
+app.use('/api', _routes2.default);
+
+exports.default = app;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonwebtoken");
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -131,8 +171,7 @@ var beerSchema = new Schema({
 		name: String,
 		description: String
 	},
-	rating: Number,
-	owner: String
+	rating: Number
 });
 
 var Beer = _mongoose2.default.model('Beer', beerSchema);
@@ -140,13 +179,44 @@ var Beer = _mongoose2.default.model('Beer', beerSchema);
 exports.default = Beer;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _User = __webpack_require__(6);
+
+var _User2 = _interopRequireDefault(_User);
+
+var _BeerFridge = __webpack_require__(15);
+
+var _BeerFridge2 = _interopRequireDefault(_BeerFridge);
+
+var _Beer = __webpack_require__(3);
+
+var _Beer2 = _interopRequireDefault(_Beer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+	User: _User2.default,
+	BeerFridge: _BeerFridge2.default,
+	Beer: _Beer2.default
+};
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -160,7 +230,7 @@ var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _Beer = __webpack_require__(2);
+var _Beer = __webpack_require__(3);
 
 var _Beer2 = _interopRequireDefault(_Beer);
 
@@ -190,21 +260,27 @@ var User = _mongoose2.default.model('User', userSchema);
 exports.default = User;
 
 /***/ }),
-/* 5 */
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("dotenv");
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(6);
-module.exports = __webpack_require__(7);
+__webpack_require__(9);
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-polyfill");
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -214,7 +290,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _app = __webpack_require__(8);
+var _app = __webpack_require__(1);
 
 var _app2 = _interopRequireDefault(_app);
 
@@ -227,73 +303,19 @@ _app2.default.listen(process.env.PORT || 8080, function () {
 exports.default = _app2.default;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _express = __webpack_require__(3);
-
-var _express2 = _interopRequireDefault(_express);
-
-var _bodyParser = __webpack_require__(9);
-
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _cors = __webpack_require__(10);
-
-var _cors2 = _interopRequireDefault(_cors);
-
-var _mongoose = __webpack_require__(0);
-
-var _mongoose2 = _interopRequireDefault(_mongoose);
-
-var _routes = __webpack_require__(11);
-
-var _routes2 = _interopRequireDefault(_routes);
-
-var _config = __webpack_require__(18);
-
-var _config2 = _interopRequireDefault(_config);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var DBHost = _config2.default.get('DBHost');
-
-_mongoose2.default.connect(DBHost, {
-	useMongoClient: true
-}).then(console.log("Connected to mongodb..."));
-var db = _mongoose2.default.connection;
-db.on('error', console.error.bind('connection error'));
-
-var app = (0, _express2.default)();
-
-//Middleware
-app.use(_bodyParser2.default.json());
-
-app.use('/api', _routes2.default);
-
-exports.default = app;
-
-/***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("cors");
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -303,21 +325,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _express = __webpack_require__(3);
+var _express = __webpack_require__(4);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _userController = __webpack_require__(12);
+var _userController = __webpack_require__(14);
 
 var _userController2 = _interopRequireDefault(_userController);
 
-var _beerController = __webpack_require__(14);
+var _beerController = __webpack_require__(17);
 
 var _beerController2 = _interopRequireDefault(_beerController);
 
-var _beerFridgeController = __webpack_require__(17);
+var _authController = __webpack_require__(19);
 
-var _beerFridgeController2 = _interopRequireDefault(_beerFridgeController);
+var _authController2 = _interopRequireDefault(_authController);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -328,24 +350,27 @@ var routes = (0, _express2.default)();
 
 //User Routes
 routes.post('/signup', _userController2.default.postUser);
+routes.post('/login', _userController2.default.login);
 routes.get('/getuser/:userSearch', _userController2.default.getUser);
-routes.put('/user/addbeer/:userId', _userController2.default.addBeer);
-routes.delete('/deleteuser/:userRemoved', _userController2.default.deleteUser);
+routes.put('/user/addbeer/:userId', _authController2.default.verifyToken, _userController2.default.addBeer);
+routes.delete('/deleteuser/:userRemoved', _authController2.default.verifyToken, _userController2.default.deleteUser);
+
 //Beer Routes
-routes.post('/beer/addbeer', _beerController2.default.addBeer);
+routes.post('/beer/addbeer', _authController2.default.verifyToken, _beerController2.default.addBeer);
 routes.get('/beers/:name/:p', _beerController2.default.getBeers);
 routes.get('/categories', _beerController2.default.getCategories);
 routes.get('/categories/:categoryId', _beerController2.default.getSingleCategory);
 
 //Beer Fridge Routes
-routes.post('/beerfridge', _beerFridgeController2.default.createFridge);
-routes.get('/beerfridge/:user', _beerFridgeController2.default.getUserFridge);
-routes.put('/beerfridge/update', _beerFridgeController2.default.updateFridge);
+// routes.post('/beerfridge', beerFridgeController.createFridge);
+// routes.get('/beerfridge/:user', beerFridgeController.getUserFridge);
+// routes.put('/beerfridge/update', beerFridgeController.updateFridge);
+
 
 exports.default = routes;
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -355,9 +380,21 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _index = __webpack_require__(1);
+var _index = __webpack_require__(5);
 
 var _index2 = _interopRequireDefault(_index);
+
+var _app = __webpack_require__(1);
+
+var _app2 = _interopRequireDefault(_app);
+
+var _jsonwebtoken = __webpack_require__(2);
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+
+var _bcryptNodejs = __webpack_require__(16);
+
+var _bcryptNodejs2 = _interopRequireDefault(_bcryptNodejs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -370,15 +407,23 @@ userController.postUser = function (req, res) {
 	    password = _req$body.password;
 
 
+	var hash = _bcryptNodejs2.default.hashSync(password);
+
 	var user = new _index2.default.User({
 		username: username,
-		password: password
+		password: hash
 	});
 
 	user.save().then(function (newUser) {
+		var payload = {
+			username: user.username,
+			id: user._id
+		};
+		var token = _jsonwebtoken2.default.sign(payload, _app2.default.get('secret'), { expiresIn: '30m' });
 		res.status(200).json({
 			success: true,
-			data: newUser
+			data: newUser.username,
+			token: token
 		});
 	}).catch(function (err) {
 		res.status(500).json({
@@ -405,8 +450,33 @@ userController.getUser = function (req, res) {
 };
 
 //Login
-userController.getLogin = function (req, res) {
-	res.status(200).json({ success: true });
+userController.login = function (req, res) {
+	var _req$body2 = req.body,
+	    name = _req$body2.name,
+	    password = _req$body2.password;
+
+	_index2.default.User.findOne({ 'username': name }).then(function (user) {
+		if (!user) {
+			res.status(500).json({ success: false, message: 'User not found' });
+		} else if (user) {
+			if (!_bcryptNodejs2.default.compareSync(password, user.password)) {
+				res.status(500).json({ success: false, message: 'Login failed. Incorrect password' });
+			} else if (_bcryptNodejs2.default.compareSync(password, user.password)) {
+				var payload = {
+					username: user.username,
+					id: user._id
+				};
+
+				var token = _jsonwebtoken2.default.sign(payload, _app2.default.get('secret'), {
+					expiresIn: '24h'
+				});
+
+				res.status(200).json({ success: true, token: token });
+			}
+		}
+	}).catch(function (err) {
+		throw err;
+	});
 };
 
 //Add Beer to User
@@ -414,9 +484,12 @@ userController.addBeer = function (req, res) {
 	var userId = req.params.userId;
 	var beers = req.body.beers;
 
+
 	_index2.default.User.findOneAndUpdate({ _id: userId }, { fridge: beers }, { new: true }).populate('fridge').exec(function (err, user) {
 		if (err) {
 			return res.status(500).json({ success: false, data: err });
+		} else if (user.username != req.decoded.username) {
+			return res.status(403).json({ success: false, message: 'Incorrect permissions' });
 		}
 		return res.status(200).json({ success: true, data: user });
 	});
@@ -426,23 +499,27 @@ userController.addBeer = function (req, res) {
 userController.deleteUser = function (req, res) {
 	var userRemoved = req.params.userRemoved;
 
-	_index2.default.User.remove({ username: userRemoved }).then(function (user) {
-		res.status(200).json({
-			success: true,
-			data: user
+	if (userRemoved != req.decoded.username) {
+		return res.status(403).json({ success: false, message: 'Incorrect permissions' });
+	} else {
+		_index2.default.User.remove({ username: userRemoved }).then(function (user) {
+			res.status(200).json({
+				success: true,
+				data: user
+			});
+		}).catch(function (err) {
+			res.status(500).json({
+				success: false,
+				data: err
+			});
 		});
-	}).catch(function (err) {
-		res.status(500).json({
-			success: false,
-			data: err
-		});
-	});
+	}
 };
 
 exports.default = userController;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -456,11 +533,11 @@ var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _Beer = __webpack_require__(2);
+var _Beer = __webpack_require__(3);
 
 var _Beer2 = _interopRequireDefault(_Beer);
 
-var _User = __webpack_require__(4);
+var _User = __webpack_require__(6);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -483,7 +560,13 @@ var BeerFridge = _mongoose2.default.model('BeerFridge', beerFridgeSchema);
 exports.default = BeerFridge;
 
 /***/ }),
-/* 14 */
+/* 16 */
+/***/ (function(module, exports) {
+
+module.exports = require("bcrypt-nodejs");
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -493,15 +576,15 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _unirest = __webpack_require__(15);
+var _unirest = __webpack_require__(18);
 
 var _unirest2 = _interopRequireDefault(_unirest);
 
-var _index = __webpack_require__(1);
+var _index = __webpack_require__(5);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _dotenv = __webpack_require__(16);
+var _dotenv = __webpack_require__(7);
 
 var _dotenv2 = _interopRequireDefault(_dotenv);
 
@@ -515,7 +598,6 @@ var BreweryKey = process.env.BREWDB_KEY;
 //New Beer
 beerController.addBeer = function (req, res) {
 	var _req$body = req.body,
-	    owner = _req$body.owner,
 	    beer = _req$body.beer,
 	    rating = _req$body.rating;
 
@@ -527,8 +609,7 @@ beerController.addBeer = function (req, res) {
 		ibu: beer.ibu,
 		label: beer.labels,
 		style: beer.style,
-		rating: rating,
-		owner: owner
+		rating: rating
 	});
 
 	newBeer.save().then(function (data) {
@@ -585,19 +666,13 @@ beerController.getSingleCategory = function (req, res) {
 exports.default = beerController;
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("unirest");
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = require("dotenv");
-
-/***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -607,77 +682,39 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _index = __webpack_require__(1);
+var _app = __webpack_require__(1);
 
-var _index2 = _interopRequireDefault(_index);
+var _app2 = _interopRequireDefault(_app);
+
+var _jsonwebtoken = __webpack_require__(2);
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var beerFridgeController = {};
+var authController = {};
 
-//Create Fridge
-beerFridgeController.createFridge = function (req, res) {
-	var owner = req.body.owner;
+authController.verifyToken = function (req, res, next) {
+	var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-
-	var fridge = new _index2.default.BeerFridge({
-		owner: owner
-	});
-
-	fridge.save().then(function (newFridge) {
-		res.status(200).json({
-			success: true,
-			data: newFridge
+	if (token) {
+		_jsonwebtoken2.default.verify(token, _app2.default.get('secret'), function (err, decoded) {
+			if (err) {
+				return res.json({ success: false, message: 'Failed to verify token' });
+			} else {
+				req.decoded = decoded;
+				next();
+			}
 		});
-	}).catch(function (err) {
-		res.status(500).json({
-			data: err
-		});
-	});
+	} else {
+		res.status(403).json({ success: false, message: 'no token provided' });
+	}
 };
 
-//Get User's Fridge
-beerFridgeController.getUserFridge = function (req, res) {
-	var user = req.params.user;
-
-	_index2.default.BeerFridge.find({ owner: user }).populate('beers').exec(function (err, fridge) {
-		if (err) {
-			return res.status(500).json({
-				message: err
-			});
-		}
-		return res.status(200).json({
-			success: true,
-			data: fridge
-		});
-	});
-};
-
-//Add Beers to Fridge
-beerFridgeController.updateFridge = function (req, res) {
-	var _req$body = req.body,
-	    user = _req$body.user,
-	    beers = _req$body.beers;
-
-	_index2.default.BeerFridge.findOneAndUpdate({ user: user }, { beers: beers }, { new: true }, function (err, fridge) {
-		if (err) {
-			return res.status(500).json({
-				message: err
-			});
-		}
-		_index2.default.Beer.populate(fridge, { path: 'beers', model: 'Beer' }, function (err, fridge) {
-			return res.status(200).json({
-				success: true,
-				data: fridge
-			});
-		});
-	});
-};
-
-exports.default = beerFridgeController;
+exports.default = authController;
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("config");
