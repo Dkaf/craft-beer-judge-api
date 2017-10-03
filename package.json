@@ -40,6 +40,7 @@
     "chai-http": "^3.0.0",
     "eslint": "^4.2.0",
     "mocha": "^3.4.2",
+    "nock": "^9.0.22",
     "nodemon": "^1.11.0",
     "webpack": "^3.6.0",
     "webpack-node-externals": "^1.6.0"
