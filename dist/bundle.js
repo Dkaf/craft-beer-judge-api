@@ -257,7 +257,7 @@ var _routes = __webpack_require__(11);
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _config = __webpack_require__(17);
+var _config = __webpack_require__(18);
 
 var _config2 = _interopRequireDefault(_config);
 
@@ -315,7 +315,7 @@ var _beerController = __webpack_require__(14);
 
 var _beerController2 = _interopRequireDefault(_beerController);
 
-var _beerFridgeController = __webpack_require__(16);
+var _beerFridgeController = __webpack_require__(17);
 
 var _beerFridgeController2 = _interopRequireDefault(_beerFridgeController);
 
@@ -329,7 +329,8 @@ var routes = (0, _express2.default)();
 //User Routes
 routes.post('/signup', _userController2.default.postUser);
 routes.get('/getuser/:userSearch', _userController2.default.getUser);
-
+routes.put('/user/addbeer/:userId', _userController2.default.addBeer);
+routes.delete('/deleteuser/:userRemoved', _userController2.default.deleteUser);
 //Beer Routes
 routes.post('/beer/addbeer', _beerController2.default.addBeer);
 routes.get('/beers/:name/:p', _beerController2.default.getBeers);
@@ -410,17 +411,14 @@ userController.getLogin = function (req, res) {
 
 //Add Beer to User
 userController.addBeer = function (req, res) {
-	var _req$params = req.params,
-	    user = _req$params.user,
-	    beers = _req$params.beers;
+	var userId = req.params.userId;
+	var beers = req.body.beers;
 
-	_index2.default.User.findOneAndUpdate({ username: user }, { fridge: beers }, { new: true }, function (err, updatedUser) {
+	_index2.default.User.findOneAndUpdate({ _id: userId }, { fridge: beers }, { new: true }).populate('fridge').exec(function (err, user) {
 		if (err) {
-			return res.status(500).json({ data: err });
+			return res.status(500).json({ success: false, data: err });
 		}
-		_index2.default.User.populate(updatedUser, { path: 'fridge', model: 'Beer' }, function (err, user) {
-			return res.status(200).json({ success: true, data: user });
-		});
+		return res.status(200).json({ success: true, data: user });
 	});
 };
 
@@ -428,10 +426,15 @@ userController.addBeer = function (req, res) {
 userController.deleteUser = function (req, res) {
 	var userRemoved = req.params.userRemoved;
 
-	_index2.default.User.remove({ username: userRemoved }, function (err, result) {
+	_index2.default.User.remove({ username: userRemoved }).then(function (user) {
 		res.status(200).json({
 			success: true,
-			data: result
+			data: user
+		});
+	}).catch(function (err) {
+		res.status(500).json({
+			success: false,
+			data: err
 		});
 	});
 };
@@ -498,7 +501,13 @@ var _index = __webpack_require__(1);
 
 var _index2 = _interopRequireDefault(_index);
 
+var _dotenv = __webpack_require__(16);
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_dotenv2.default.config();
 
 var beerController = {};
 var BreweryKey = process.env.BREWDB_KEY;
@@ -583,6 +592,12 @@ module.exports = require("unirest");
 
 /***/ }),
 /* 16 */
+/***/ (function(module, exports) {
+
+module.exports = require("dotenv");
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -662,7 +677,7 @@ beerFridgeController.updateFridge = function (req, res) {
 exports.default = beerFridgeController;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("config");
