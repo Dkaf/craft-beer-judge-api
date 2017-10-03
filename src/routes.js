@@ -10,7 +10,8 @@ import beerFridgeController from './controllers/beerFridgeController';
 //User Routes
 routes.post('/signup', userController.postUser);
 routes.get('/getuser/:userSearch', userController.getUser);
-
+routes.put('/user/addbeer/:userId', userController.addBeer);
+routes.delete('/deleteuser/:userRemoved', userController.deleteUser);
 //Beer Routes
 routes.post('/beer/addbeer', beerController.addBeer);
 routes.get('/beers/:name/:p', beerController.getBeers);
