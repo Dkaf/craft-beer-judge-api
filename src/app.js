@@ -4,11 +4,15 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 
 import routes from './routes';
-import config from '/../config';
+import config from 'config';
 
-mongoose.connect(config.DBHost, () => {
-	console.log('connected to mongodb...');
+let DBHost = config.get('DBHost');
+
+mongoose.connect(DBHost, {
+	useMongoClient: true
 });
+let db = mongoose.connection;
+db.on('error', console.error.bind('connection error'));
 
 const app = express();
 
