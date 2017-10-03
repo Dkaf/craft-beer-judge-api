@@ -2,3 +2,4 @@ node_modules
 .eslintrc.json
 keys.js
 npm-debug.log
+.env
