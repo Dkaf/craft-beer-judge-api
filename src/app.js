@@ -10,7 +10,7 @@ let DBHost = config.get('DBHost');
 
 mongoose.connect(DBHost, {
 	useMongoClient: true
-});
+}).then(console.log("Connected to mongodb..."));
 let db = mongoose.connection;
 db.on('error', console.error.bind('connection error'));
 
