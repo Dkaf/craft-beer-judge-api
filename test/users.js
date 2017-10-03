@@ -57,9 +57,53 @@ describe('userController', () => {
 						res.body.success.should.equal(true);
 						res.body.data.should.be.a('object');
 						res.body.data.should.have.property('id');
-						res.body.data.should.have.property('username');
+						res.body.data.should.have.property('username').eql('testName');
 						res.body.data.should.have.property('fridge');
 						res.body.data.fridge.should.be.a('array');
+						done();
+					});
+			});
+		});
+	});
+
+	describe('addBeer', () => {
+		it('should update a users fridge', (done) => {
+			let beer = new Beer({name:'pseduo sue', owner: 'Dan'});
+			beer.save();
+			let beer2 = new Beer({name:'pbr', owner: 'Dan'})
+			beer2.save();
+			let newFridge = [beer, beer2];
+			let testUser = new User({
+				username: 'Daniel',
+				password:'testPassword',
+				fridge: beer
+			});
+			testUser.save();
+			chai.request(server)
+				.put('/api/user/addbeer/' + testUser.id)
+				.send({"beers": newFridge})
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.success.should.equal(true);
+					res.body.data.should.be.a('object');
+					res.body.data.should.have.property('fridge');
+					res.body.data.fridge.should.be.a('array');
+					res.body.data.fridge.length.should.equal(2);
+					done();
+				});
+		});
+	});
+
+	describe('deleteUser', () => {
+		it('should delete a user by username', (done) => {
+			let testUser = new User({username: 'Dan', password:'test'});
+			testUser.save((err, user) => {
+				chai.request(server)
+					.delete('/api/deleteuser/' + testUser.username)
+					.end((err, res) => {
+						res.should.have.status(200);
+						res.body.success.should.equal(true);
+						res.body.data.should.be.a('object');
 						done();
 					});
 			});
