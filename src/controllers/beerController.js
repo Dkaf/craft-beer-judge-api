@@ -3,13 +3,14 @@ import db from './../models/index';
 import dotenv from 'dotenv';
 dotenv.config();
 
+
 const beerController = {};
 const BreweryKey = process.env.BREWDB_KEY;
 
 
 //New Beer
 beerController.addBeer = (req, res) => {
-	const { owner, beer, rating } = req.body;
+	const { beer, rating } = req.body;
 
 	const newBeer = new db.Beer({
 		name: beer.name,
@@ -19,7 +20,6 @@ beerController.addBeer = (req, res) => {
 		label: beer.labels,
 		style: beer.style,
 		rating: rating,
-		owner: owner
 	});
 
 	newBeer.save()
@@ -34,8 +34,6 @@ beerController.addBeer = (req, res) => {
 				data: err
 			});
 		});
-
-
 };
 
 

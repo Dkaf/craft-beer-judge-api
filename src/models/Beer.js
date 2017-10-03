@@ -13,8 +13,7 @@ const beerSchema = new Schema({
 		name: String,
 		description: String
 	},
-	rating: Number,
-	owner: String
+	rating: Number
 });
 
 const Beer = mongoose.model('Beer', beerSchema);
