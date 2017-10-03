@@ -7,7 +7,7 @@ import Beer from '../src/models/Beer';
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import server from '../src/app.js';
+import server from '../src/index.js';
 
 const should = chai.should();
 
