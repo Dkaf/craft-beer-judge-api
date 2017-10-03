@@ -171,7 +171,8 @@ var beerSchema = new Schema({
 		name: String,
 		description: String
 	},
-	rating: Number
+	rating: Number,
+	_owner: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
 var Beer = _mongoose2.default.model('Beer', beerSchema);
@@ -351,13 +352,14 @@ var routes = (0, _express2.default)();
 //User Routes
 routes.post('/signup', _userController2.default.postUser);
 routes.post('/login', _userController2.default.login);
-routes.get('/getuser/:userSearch', _userController2.default.getUser);
-routes.put('/user/addbeer/:userId', _authController2.default.verifyToken, _userController2.default.addBeer);
+routes.get('/getuser/', _authController2.default.verifyToken, _userController2.default.getUser);
+routes.put('/user/addbeer/', _authController2.default.verifyToken, _userController2.default.addBeer);
 routes.delete('/deleteuser/:userRemoved', _authController2.default.verifyToken, _userController2.default.deleteUser);
 
 //Beer Routes
 routes.post('/beer/addbeer', _authController2.default.verifyToken, _beerController2.default.addBeer);
-routes.get('/beers/:name/:p', _beerController2.default.getBeers);
+routes.delete('/beer', _authController2.default.verifyToken, _beerController2.default.removeBeer);
+routes.get('/beers/:name/:page', _beerController2.default.getBeers);
 routes.get('/categories', _beerController2.default.getCategories);
 routes.get('/categories/:categoryId', _beerController2.default.getSingleCategory);
 
@@ -434,28 +436,26 @@ userController.postUser = function (req, res) {
 
 //Find User
 userController.getUser = function (req, res) {
-	var userSearch = req.params.userSearch;
-
-
-	_index2.default.User.find({ username: userSearch }).populate('fridge').then(function (user) {
+	_index2.default.User.findById(req.decoded.id).populate('fridge').then(function (user) {
 		res.status(200).json({
 			success: true,
-			data: { id: user[0]._id, username: user[0].username, fridge: user[0].fridge }
+			data: { id: user._id, username: user.username, fridge: user.fridge }
 		});
 	}).catch(function (err) {
 		res.status(500).json({
 			message: err
 		});
+		throw err;
 	});
 };
 
 //Login
 userController.login = function (req, res) {
 	var _req$body2 = req.body,
-	    name = _req$body2.name,
+	    username = _req$body2.username,
 	    password = _req$body2.password;
 
-	_index2.default.User.findOne({ 'username': name }).then(function (user) {
+	_index2.default.User.findOne({ 'username': username }).then(function (user) {
 		if (!user) {
 			res.status(500).json({ success: false, message: 'User not found' });
 		} else if (user) {
@@ -463,12 +463,13 @@ userController.login = function (req, res) {
 				res.status(500).json({ success: false, message: 'Login failed. Incorrect password' });
 			} else if (_bcryptNodejs2.default.compareSync(password, user.password)) {
 				var payload = {
+					iss: 'https://shielded-brook-50392.herokuapp.com/',
 					username: user.username,
 					id: user._id
 				};
 
 				var token = _jsonwebtoken2.default.sign(payload, _app2.default.get('secret'), {
-					expiresIn: '24h'
+					expiresIn: '1h'
 				});
 
 				res.status(200).json({ success: true, token: token });
@@ -481,17 +482,16 @@ userController.login = function (req, res) {
 
 //Add Beer to User
 userController.addBeer = function (req, res) {
-	var userId = req.params.userId;
 	var beers = req.body.beers;
 
 
-	_index2.default.User.findOneAndUpdate({ _id: userId }, { fridge: beers }, { new: true }).populate('fridge').exec(function (err, user) {
+	_index2.default.User.findOneAndUpdate({ _id: req.decoded.id }, { fridge: beers }, { new: true }).populate('fridge').exec(function (err, user) {
 		if (err) {
 			return res.status(500).json({ success: false, data: err });
 		} else if (user.username != req.decoded.username) {
 			return res.status(403).json({ success: false, message: 'Incorrect permissions' });
 		}
-		return res.status(200).json({ success: true, data: user });
+		return res.status(200).json({ success: true, data: user.fridge });
 	});
 };
 
@@ -609,17 +609,53 @@ beerController.addBeer = function (req, res) {
 		ibu: beer.ibu,
 		label: beer.labels,
 		style: beer.style,
-		rating: rating
+		rating: rating,
+		_owner: req.decoded.id
 	});
 
-	newBeer.save().then(function (data) {
-		res.status(200).json({
-			success: true,
-			data: data
+	newBeer.save().then(function (beer) {
+		_index2.default.User.findByIdAndUpdate(req.decoded.id).then(function (user) {
+			user.fridge.push(beer._id);
+			res.status(200).json({
+				success: true,
+				data: {
+					beer: beer,
+					username: user.username,
+					fridge: user.fridge
+				}
+			});
+		}).catch(function (err) {
+			res.status(500).json({ success: false, message: err });
 		});
 	}).catch(function (err) {
 		res.status(500).json({
 			data: err
+		});
+		throw err;
+	});
+};
+
+//Remove Beer
+beerController.removeBeer = function (req, res) {
+	var beerId = req.body.beerId;
+
+
+	_index2.default.Beer.findByIdAndRemove(beerId).then(function (beer) {
+		if (req.decoded.id != beer._owner) {
+			res.status(403).json({
+				success: false,
+				message: 'You do not have the correct permissions for this'
+			});
+		} else {
+			res.status(200).json({
+				success: true,
+				message: 'Successfully removed ' + beer
+			});
+		}
+	}).catch(function (err) {
+		res.status(500).json({
+			success: false,
+			message: err
 		});
 	});
 };
@@ -700,7 +736,10 @@ authController.verifyToken = function (req, res, next) {
 	if (token) {
 		_jsonwebtoken2.default.verify(token, _app2.default.get('secret'), function (err, decoded) {
 			if (err) {
-				return res.json({ success: false, message: 'Failed to verify token' });
+				res.json({ success: false, message: 'Failed to verify token' });
+				throw err;
+			} else if (!decoded.id || !decoded.username) {
+				return res.json({ success: false, message: 'No Payload in token' });
 			} else {
 				req.decoded = decoded;
 				next();
