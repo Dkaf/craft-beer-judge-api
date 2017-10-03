@@ -20,22 +20,59 @@ beerController.addBeer = (req, res) => {
 		label: beer.labels,
 		style: beer.style,
 		rating: rating,
+		_owner: req.decoded.id
 	});
 
 	newBeer.save()
-		.then((data) =>{
-			res.status(200).json({
-				success: true,
-				data: data
-			});
+		.then((beer) => {
+			db.User.findByIdAndUpdate(req.decoded.id)
+				.then( (user) => {
+					user.fridge.push(beer._id);
+					res.status(200).json({
+						success: true,
+						data: {
+							beer,
+							username: user.username,
+							fridge: user.fridge
+						}
+					});
+				}).catch( (err) => {
+					res.status(500).json({success: false, message: err});
+				});
 		})
 		.catch((err) =>{
 			res.status(500).json({
 				data: err
 			});
+			throw err;
 		});
+
 };
 
+//Remove Beer
+beerController.removeBeer = (req, res) => {
+	let { beerId } = req.body;
+
+	db.Beer.findByIdAndRemove(beerId)
+		.then((beer) => {			
+			if(req.decoded.id != beer._owner) {
+				res.status(403).json({
+					success: false,
+					message: 'You do not have the correct permissions for this'
+				});
+			} else {
+				res.status(200).json({
+					success: true,
+					message: 'Successfully removed ' + beer
+				});
+			}
+		}).catch((err) => {
+			res.status(500).json({
+				success: false,
+				message: err
+			});
+		});
+};
 
 //Search for beers by name
 beerController.getBeers = (req, res) => {
