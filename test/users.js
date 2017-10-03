@@ -16,6 +16,7 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
+
 describe('userController', () => {
 	beforeEach((done) => {
 		User.remove({}, (err) => {
@@ -47,20 +48,21 @@ describe('userController', () => {
 	});
 
 	describe('getUser', () => {
-		it('should find a user by username', (done) => {
-			let beer = new Beer({name:'pseduo sue', owner: 'testName'});
+		it('should find a user by id', (done) => {
+			let beer = new Beer({name:'pseduo sue'});
 			beer.save();
-			let user = new User({username: 'testName', password: 'testPassword', fridge: beer});
-			user.save((err, user) => {
+			let testUser = new User({username: 'Daniel', password: 'testPassword', fridge: beer});
+			testUser.save((err, user) => {
+				let token = jwt.sign({username: user.username, id: user._id}, server.get('secret'),{ expiresIn:'10s' });													
 				chai.request(server)
-					.get('/api/getuser/' + user.username)
-					.send(user)
+					.get('/api/getuser/')
+					.set('x-access-token', token)
 					.end((err, res) => {
 						res.should.have.status(200);
 						res.body.success.should.equal(true);
 						res.body.data.should.be.a('object');
 						res.body.data.should.have.property('id');
-						res.body.data.should.have.property('username').eql('testName');
+						res.body.data.should.have.property('username').eql('Daniel');
 						res.body.data.should.have.property('fridge');
 						res.body.data.fridge.should.be.a('array');
 						done();
@@ -78,7 +80,7 @@ describe('userController', () => {
 			testUser.save((err,user) => {
 				chai.request(server)
 					.post('/api/login')
-					.send({"name": testUser.username, "password": "testPassword"})
+					.send({"username": testUser.username, "password": "testPassword"})
 					.end((err, res) => {
 						res.should.have.status(200);
 						res.body.success.should.equal(true);
@@ -92,10 +94,9 @@ describe('userController', () => {
 
 	describe('addBeer', () => {
 		it('should update a users fridge', (done) => {
-			let token = jwt.sign({username: 'Daniel'}, server.get('secret'),{ expiresIn:'1m' });			
-			let beer = new Beer({name:'pseduo sue', owner: 'Dan'});
+			let beer = new Beer({name:'pseduo sue'});
 			beer.save();
-			let beer2 = new Beer({name:'pbr', owner: 'Dan'});
+			let beer2 = new Beer({name:'pbr'});
 			beer2.save();
 			let newFridge = [beer, beer2];
 			let testUser = new User({
@@ -103,26 +104,26 @@ describe('userController', () => {
 				password:'testPassword',
 				fridge: beer
 			});
-			testUser.save();
-			chai.request(server)
-				.put('/api/user/addbeer/' + testUser.id)
-				.send({"beers": newFridge, "token": token})
-				.end((err, res) => {
-					res.should.have.status(200);
-					res.body.success.should.equal(true);
-					res.body.data.should.be.a('object');
-					res.body.data.should.have.property('fridge');
-					res.body.data.fridge.should.be.a('array');
-					res.body.data.fridge.length.should.equal(2);
-					done();
-				});
+			let token = jwt.sign({username: testUser.username, id: testUser._id}, server.get('secret'),{ expiresIn:'10s' });															
+			testUser.save((err, user) => {
+				chai.request(server)				
+					.put('/api/user/addbeer/')
+					.send({"beers": newFridge, "token": token})
+					.end((err, res) => {
+						res.should.have.status(200);
+						res.body.success.should.equal(true);
+						res.body.data.should.be.a('array');
+						res.body.data.length.should.equal(2);
+						done();
+					});
+			});
 		});
 	});
 
 	describe('deleteUser', () => {
 		it('should delete a user by username', (done) => {
-			let token = jwt.sign({username: 'Daniel'}, server.get('secret'),{ expiresIn:'1m' });						
-			let testUser = new User({username: 'Daniel', password:'test'});
+			let testUser = new User({username: 'Daniel', password:'testPassword'});
+			let token = jwt.sign({username: testUser.username, id: testUser._id}, server.get('secret'),{ expiresIn:'10s' });												
 			testUser.save((err, user) => {
 				chai.request(server)
 					.delete('/api/deleteuser/' + testUser.username)
