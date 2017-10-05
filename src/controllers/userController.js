@@ -8,6 +8,15 @@ const userController = {};
 userController.postUser = (req, res) => {
 	const { username, password } = req.body;
 
+	db.User.findOne({username: username}, (user) => {
+		if(user) {
+			return res.status(500).json({
+				success: false,
+				message: 'User already exists'
+			});
+		}
+	});
+
 	if(!username) {
 		return res.status(400).json({
 			success: false,
@@ -17,11 +26,6 @@ userController.postUser = (req, res) => {
 		return res.status(400).json({
 			success: false,
 			message: 'Missing password in body'
-		});
-	} else if (db.User.findOne({username: username})) {
-		return res.status(500).json({
-			success: false,
-			message: 'User already exists'
 		});
 	} else {
 		const hash =  bcrypt.hashSync(password);
