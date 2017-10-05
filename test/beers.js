@@ -66,7 +66,7 @@ describe('beerController', () => {
 				}
 			};
 
-			let user = new User({username: 'Daniel', password: 'testPassword', fridge:[]});
+			let user = new User({username: 'testUser1', password: 'testPassword', fridge:[]});
 			user.save();
 			let token = jwt.sign({username: user.username, id: user._id}, server.get('secret'), {expiresIn: '10s'});
 
@@ -91,7 +91,7 @@ describe('beerController', () => {
 	describe('/removeBeer', () => {
 		it('should remove beer for a user', (done) => {
 			
-			let user = new User({username: 'Daniel', password: 'testPassword', fridge: []});
+			let user = new User({username: 'testUser2', password: 'testPassword', fridge: []});
 			user.save( (err, user) => {
 				if(err) {
 					throw err;
