@@ -27,23 +27,21 @@ describe('userController', () => {
 	describe('postUser', () => {
 		it('should add a user', (done) => {
 			let user = {
-				username: 'testName',
-				password: 'testPassword'
+				username:"Daniel",
+				password:"testPassword"
 			};
-
 			chai.request(server)
 				.post('/api/signup')
 				.send(user)
 				.end((err,res) => {
-					res.should.have.status(200);
+					console.log(res.body.message);
+					res.should.have.status(201);
 					res.body.success.should.equal(true);
 					res.body.data.should.equal(user.username);
 					res.body.should.have.property('token');
 					res.body.token.should.be.a('string');
 					done();
 				});
-
-
 		});
 	});
 
