@@ -8,31 +8,51 @@ const userController = {};
 userController.postUser = (req, res) => {
 	const { username, password } = req.body;
 
-	const hash =  bcrypt.hashSync(password);
-
-	const user = new db.User({
-		username,
-		password: hash
-	});
-
-	user.save()
-		.then((newUser) => {
-			let payload = {
-				username: user.username,
-				id: user._id
-			};
-			let token = jwt.sign(payload, app.get('secret'), {expiresIn: '30m'});
-			res.status(200).json({
-				success: true,
-				data: newUser.username,
-				token: token
-			});
-		})
-		.catch((err) => {
-			res.status(500).json({
-				message: err
-			});
+	if(!username) {
+		return res.status(400).json({
+			success: false,
+			message: 'Missing username in body'
 		});
+	} else if(!password) {
+		return res.status(400).json({
+			success: false,
+			message: 'Missing password in body'
+		});
+	} else if (db.User.findOne({username: username})) {
+		return res.status(500).json({
+			success: false,
+			message: 'User already exists'
+		});
+	} else {
+		const hash =  bcrypt.hashSync(password);
+		
+		const user = new db.User({
+			username,
+			password: hash
+		});
+
+		user.save()
+			.then((newUser) => {
+				let payload = {
+					username: user.username,
+					id: user._id
+				};
+				let token = jwt.sign(payload, app.get('secret'), {expiresIn: '30m'});
+				res.status(201).json({
+					success: true,
+					data: newUser.username,
+					token: token
+				});
+			})
+			.catch((err) => {
+				res.status(500).json({
+					message: err
+				});
+			});
+		
+
+	}
+
 };
 
 //Find User
