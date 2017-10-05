@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 
 import routes from './routes';
 import config from 'config';
@@ -20,6 +19,7 @@ db.on('error', console.error.bind('connection error'));
 const app = express();
 
 //Middleware
+app.use(cors());
 app.use(bodyParser.json());
 app.set('secret', process.env.SECRET_KEY);
 
