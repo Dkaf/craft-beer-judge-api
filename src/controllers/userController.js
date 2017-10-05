@@ -8,7 +8,7 @@ const userController = {};
 userController.postUser = (req, res) => {
 	const { username, password } = req.body;
 
-	db.User.findOne({username: username}, (user) => {
+	db.User.findOne({'username': username}, (user) => {
 		if(user) {
 			return res.status(500).json({
 				success: false,
