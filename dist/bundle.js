@@ -406,7 +406,7 @@ userController.postUser = function (req, res) {
 	    password = _req$body.password;
 
 
-	_index2.default.User.findOne({ username: username }, function (user) {
+	_index2.default.User.findOne({ 'username': username }, function (user) {
 		if (user) {
 			return res.status(500).json({
 				success: false,
