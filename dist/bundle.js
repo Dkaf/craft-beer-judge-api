@@ -406,29 +406,50 @@ userController.postUser = function (req, res) {
 	    password = _req$body.password;
 
 
-	var hash = _bcryptNodejs2.default.hashSync(password);
-
-	var user = new _index2.default.User({
-		username: username,
-		password: hash
+	_index2.default.User.findOne({ username: username }, function (user) {
+		if (user) {
+			return res.status(500).json({
+				success: false,
+				message: 'User already exists'
+			});
+		}
 	});
 
-	user.save().then(function (newUser) {
-		var payload = {
-			username: user.username,
-			id: user._id
-		};
-		var token = _jsonwebtoken2.default.sign(payload, _app2.default.get('secret'), { expiresIn: '30m' });
-		res.status(200).json({
-			success: true,
-			data: newUser.username,
-			token: token
+	if (!username) {
+		return res.status(400).json({
+			success: false,
+			message: 'Missing username in body'
 		});
-	}).catch(function (err) {
-		res.status(500).json({
-			message: err
+	} else if (!password) {
+		return res.status(400).json({
+			success: false,
+			message: 'Missing password in body'
 		});
-	});
+	} else {
+		var hash = _bcryptNodejs2.default.hashSync(password);
+
+		var user = new _index2.default.User({
+			username: username,
+			password: hash
+		});
+
+		user.save().then(function (newUser) {
+			var payload = {
+				username: user.username,
+				id: user._id
+			};
+			var token = _jsonwebtoken2.default.sign(payload, _app2.default.get('secret'), { expiresIn: '30m' });
+			res.status(201).json({
+				success: true,
+				data: newUser.username,
+				token: token
+			});
+		}).catch(function (err) {
+			res.status(500).json({
+				message: err
+			});
+		});
+	}
 };
 
 //Find User
