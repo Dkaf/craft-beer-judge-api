@@ -80,7 +80,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _express = __webpack_require__(4);
+var _express = __webpack_require__(3);
 
 var _express2 = _interopRequireDefault(_express);
 
@@ -95,10 +95,6 @@ var _cors2 = _interopRequireDefault(_cors);
 var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
-
-var _jsonwebtoken = __webpack_require__(2);
-
-var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
 var _routes = __webpack_require__(13);
 
@@ -127,6 +123,7 @@ db.on('error', console.error.bind('connection error'));
 var app = (0, _express2.default)();
 
 //Middleware
+app.use((0, _cors2.default)());
 app.use(_bodyParser2.default.json());
 app.set('secret', process.env.SECRET_KEY);
 
@@ -136,12 +133,6 @@ exports.default = app;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-module.exports = require("jsonwebtoken");
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -180,13 +171,13 @@ var Beer = _mongoose2.default.model('Beer', beerSchema);
 exports.default = Beer;
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -196,7 +187,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _User = __webpack_require__(6);
+var _User = __webpack_require__(5);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -204,7 +195,7 @@ var _BeerFridge = __webpack_require__(15);
 
 var _BeerFridge2 = _interopRequireDefault(_BeerFridge);
 
-var _Beer = __webpack_require__(3);
+var _Beer = __webpack_require__(2);
 
 var _Beer2 = _interopRequireDefault(_Beer);
 
@@ -217,7 +208,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -231,7 +222,7 @@ var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _Beer = __webpack_require__(3);
+var _Beer = __webpack_require__(2);
 
 var _Beer2 = _interopRequireDefault(_Beer);
 
@@ -259,6 +250,12 @@ var userSchema = new Schema({
 var User = _mongoose2.default.model('User', userSchema);
 
 exports.default = User;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonwebtoken");
 
 /***/ }),
 /* 7 */
@@ -326,7 +323,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _express = __webpack_require__(4);
+var _express = __webpack_require__(3);
 
 var _express2 = _interopRequireDefault(_express);
 
@@ -382,7 +379,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _index = __webpack_require__(5);
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -390,7 +387,7 @@ var _app = __webpack_require__(1);
 
 var _app2 = _interopRequireDefault(_app);
 
-var _jsonwebtoken = __webpack_require__(2);
+var _jsonwebtoken = __webpack_require__(6);
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
@@ -533,11 +530,11 @@ var _mongoose = __webpack_require__(0);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
-var _Beer = __webpack_require__(3);
+var _Beer = __webpack_require__(2);
 
 var _Beer2 = _interopRequireDefault(_Beer);
 
-var _User = __webpack_require__(6);
+var _User = __webpack_require__(5);
 
 var _User2 = _interopRequireDefault(_User);
 
@@ -580,7 +577,7 @@ var _unirest = __webpack_require__(18);
 
 var _unirest2 = _interopRequireDefault(_unirest);
 
-var _index = __webpack_require__(5);
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -722,7 +719,7 @@ var _app = __webpack_require__(1);
 
 var _app2 = _interopRequireDefault(_app);
 
-var _jsonwebtoken = __webpack_require__(2);
+var _jsonwebtoken = __webpack_require__(6);
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
