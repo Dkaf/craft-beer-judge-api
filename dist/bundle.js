@@ -687,7 +687,7 @@ beerController.getBeers = function (req, res) {
 	_unirest2.default.get(brewUrl).end(function (data) {
 		res.status(200).json({
 			success: true,
-			data: data
+			data: data.body
 		});
 	});
 };
