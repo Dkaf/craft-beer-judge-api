@@ -131,13 +131,13 @@ describe('beerController', () => {
 			let jsonContents = JSON.parse(contents);
 
 			nock('http://api.brewerydb.com/v2')
-				.get('/beers/?key=' + process.env.BREWDB_KEY + '&name=sue&p=1')
+				.get('/beers/?key=' + process.env.BREWDB_KEY + '&name=sue&type=beer')
 				.reply(200, jsonContents);
 
 
 
 			chai.request(server)
-				.get('/api/beers/sue/1')
+				.get('/api/beers/sue')
 				.end((err, res) => {
 					res.should.have.status(200);
 					res.body.success.should.equal(true);
