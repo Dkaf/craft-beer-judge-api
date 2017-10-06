@@ -357,7 +357,7 @@ routes.delete('/deleteuser/:userRemoved', _authController2.default.verifyToken, 
 //Beer Routes
 routes.post('/beer/addbeer', _authController2.default.verifyToken, _beerController2.default.addBeer);
 routes.delete('/beer', _authController2.default.verifyToken, _beerController2.default.removeBeer);
-routes.get('/beers/:name/:page', _beerController2.default.getBeers);
+routes.get('/beers/:name', _beerController2.default.getBeers);
 routes.get('/categories', _beerController2.default.getCategories);
 routes.get('/categories/:categoryId', _beerController2.default.getSingleCategory);
 
@@ -681,15 +681,13 @@ beerController.removeBeer = function (req, res) {
 
 //Search for beers by name
 beerController.getBeers = function (req, res) {
-	var _req$params = req.params,
-	    name = _req$params.name,
-	    page = _req$params.page;
+	var name = req.params.name;
 
-	var brewUrl = 'http://api.brewerydb.com/v2/beers/?key=' + BreweryKey + '&name=' + name + '&p=' + page;
+	var brewUrl = 'http://api.brewerydb.com/v2/search?key=' + BreweryKey + '&q=' + name + '&type=beer';
 	_unirest2.default.get(brewUrl).end(function (data) {
 		res.status(200).json({
 			success: true,
-			data: data.body.data
+			data: data
 		});
 	});
 };
