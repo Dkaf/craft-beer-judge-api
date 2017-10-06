@@ -82,7 +82,7 @@ beerController.getBeers = (req, res) => {
 		.end((data) => {
 			res.status(200).json({
 				success: true,
-				data: data
+				data: data.body.data
 			});
 		});
 };
