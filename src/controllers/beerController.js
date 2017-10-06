@@ -76,13 +76,13 @@ beerController.removeBeer = (req, res) => {
 
 //Search for beers by name
 beerController.getBeers = (req, res) => {
-	const { name, page } = req.params;
-	const brewUrl = 'http://api.brewerydb.com/v2/beers/?key=' + BreweryKey + '&name=' + name + '&p=' + page;
+	const { name } = req.params;
+	const brewUrl = 'http://api.brewerydb.com/v2/search?key=' + BreweryKey + '&q=' + name + '&type=beer';
 	unirest.get(brewUrl)
 		.end((data) => {
 			res.status(200).json({
 				success: true,
-				data: data.body.data
+				data: data
 			});
 		});
 };
