@@ -17,7 +17,7 @@ routes.delete('/deleteuser/:userRemoved', authController.verifyToken, userContro
 //Beer Routes
 routes.post('/beer/addbeer', authController.verifyToken, beerController.addBeer);
 routes.delete('/beer', authController.verifyToken, beerController.removeBeer);
-routes.get('/beers/:name/:page', beerController.getBeers);
+routes.get('/beers/:name', beerController.getBeers);
 routes.get('/categories', beerController.getCategories);
 routes.get('/categories/:categoryId', beerController.getSingleCategory);
 
