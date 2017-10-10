@@ -633,8 +633,9 @@ beerController.addBeer = function (req, res) {
 	});
 
 	newBeer.save().then(function (beer) {
-		_index2.default.User.findByIdAndUpdate(req.decoded.id).then(function (user) {
+		_index2.default.User.findByIdAndUpdate(req.decoded.id, { new: true }).then(function (user) {
 			user.fridge.push(beer._id);
+			user.save(function (user) {});
 			res.status(200).json({
 				success: true,
 				data: {
