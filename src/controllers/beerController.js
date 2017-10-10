@@ -25,9 +25,12 @@ beerController.addBeer = (req, res) => {
 
 	newBeer.save()
 		.then((beer) => {
-			db.User.findByIdAndUpdate(req.decoded.id)
+			db.User.findByIdAndUpdate(req.decoded.id, {new: true})
 				.then( (user) => {
 					user.fridge.push(beer._id);
+					user.save( user => {
+
+					})
 					res.status(200).json({
 						success: true,
 						data: {
@@ -46,7 +49,6 @@ beerController.addBeer = (req, res) => {
 			});
 			throw err;
 		});
-
 };
 
 //Remove Beer
