@@ -17,7 +17,7 @@ beerController.addBeer = (req, res) => {
 		description: beer.description,
 		abv: beer.abv,
 		ibu: beer.ibu,
-		label: beer.labels,
+		labels: beer.labels,
 		style: beer.style,
 		rating: rating,
 		_owner: req.decoded.id
